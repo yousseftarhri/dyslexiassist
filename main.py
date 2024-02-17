@@ -20,7 +20,6 @@ logger = logging.getLogger(__name__)
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 client = OpenAI(api_key=OPENAI_API_KEY)
 bot_token = os.getenv('TELEGRAM_BOT_TOKEN')
-prompt = f"""You role is to speak with someone who wanna learn english, by speaking, help the user to improve his speak skills."""
 
 vectore_store = get_embd()
 def prompt_ai(context) :
