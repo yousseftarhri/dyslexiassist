@@ -33,16 +33,16 @@ def response(messages) :
 
     return completion.choices[0].message.content
 
-def TTS(msg):
+def TTS(msg,file_name):
     response = client.audio.speech.create(
         model="tts-1",
         voice="alloy",
         input=msg,
     )
 
-    response.stream_to_file("output.mp3")
+    response.stream_to_file(file_name)
 
-    audio = open("output.mp3", "rb")
+    audio = open(file_name, "rb")
     return audio
 def STT(bot,name_audio,file_id,chat_id) :
     file = bot.getFile(file_id)
@@ -88,18 +88,25 @@ def voice_handler(update, context):
 
         except:
             file_id = update.message.audio.file_id
-
-        msg = STT(bot,f'voice_{chat_id}.mp3',file_id,chat_id)
+        file_path = f'voice_{chat_id}.mp3'
+        msg = STT(bot,file_path,file_id,chat_id)
         existing_document = collection.find_one({"_id": chat_id})
         existing_document['conversation'].append({ "role": "user", "content": msg })
 
         output_ai = response(existing_document['conversation'])
         print(output_ai)
-        audio = TTS(output_ai)
+        audio = TTS(output_ai,file_path)
         bot.send_voice(chat_id=chat_id, voice=audio)
 
         existing_document['conversation'].append({ "role": "assistant", "content": output_ai })
         collection.update_one({"_id": chat_id}, {'$set': {'conversation': existing_document['conversation']}})
+
+        if os.path.exists(file_path):
+            # Delete the file
+            os.remove(file_path)
+            print(f"File {file_path} has been deleted.")
+        else:
+            print(f"File {file_path} does not exist.")
 
 
 
