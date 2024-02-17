@@ -11,12 +11,10 @@ os.environ["OPENAI_API_KEY"] = os.getenv('OPENAI_API_KEY')
 os.environ["PINECONE_API_KEY"] = os.getenv('PINECONE_API_KEY')
 
 index_name = "loi"
-print("ok")
 loader = PyPDFLoader("book_ted.pdf")
-
-documents = loader.load()
-text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
-docs = text_splitter.split_documents(documents)
-embeddings = OpenAIEmbeddings()
-print("ok")
-docsearch = Pinecone.from_documents(docs, embeddings, index_name=index_name)
+def get_embd():
+    documents = loader.load()
+    text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
+    docs = text_splitter.split_documents(documents)
+    embeddings = OpenAIEmbeddings()
+    return Pinecone.from_documents(docs, embeddings, index_name=index_name)

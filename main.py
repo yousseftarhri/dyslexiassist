@@ -3,7 +3,7 @@ import logging
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 from dotenv import load_dotenv
 from openai import OpenAI
-
+from get_embedding import get_embd
 from get_db import get_database
 
 load_dotenv()
@@ -22,7 +22,14 @@ client = OpenAI(api_key=OPENAI_API_KEY)
 bot_token = os.getenv('TELEGRAM_BOT_TOKEN')
 prompt = f"""You role is to speak with someone who wanna learn english, by speaking, help the user to improve his speak skills."""
 
-
+vectore_store = get_embd()
+def prompt_ai(context) :
+    prompt_ai = f"""
+    You role is to speak with someone who wanna learn english, by speaking, help the user to improve his speak skills. use the context delimited by double quotes to answer the user question
+    ""context : {context}""
+    
+    """
+    return prompt_ai
 
 def response(messages) :
 
@@ -85,13 +92,14 @@ def voice_handler(update, context):
     try:
         try:
             file_id = update.message.voice.file_id
-
         except:
             file_id = update.message.audio.file_id
         file_path = f'voice_{chat_id}.mp3'
         msg = STT(bot,file_path,file_id,chat_id)
         existing_document = collection.find_one({"_id": chat_id})
         existing_document['conversation'].append({ "role": "user", "content": msg })
+        docs = vectore_store.similarity_search(msg)
+        existing_document['conversation'][0] =  {"role": "system", "content": prompt_ai(docs)}
 
         output_ai = response(existing_document['conversation'])
         print(output_ai)
