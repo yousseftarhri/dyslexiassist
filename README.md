@@ -1,4 +1,5 @@
 # CasablancaAI
+This Language Learning Model (LLM) has been implemented in the form of a Telegram bot, providing users with a friendly interface for language learning. 
 
 ### Files
 book_ted.pdf: The primary text corpus used for training the Language Learning Model (LLM).
