@@ -1,3 +1,5 @@
 # CasablancaAI
 
-[casablancaai.mp4](..%2F..%2F..%2FVideos%2Fcasablancaai.mp4)
+
+https://github.com/yousseftarhri/casablancaai/assets/40345643/83536520-a4da-4bb6-8ed5-7964f123b2bf
+
