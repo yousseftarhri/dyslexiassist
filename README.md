@@ -17,5 +17,8 @@ The Language Learning Model (LLM) has been trained on the contents of the book_t
 
 ### How this AI works:
 
+![Screenshot from 2024-02-18 13-25-42](https://github.com/yousseftarhri/casablancaai/assets/40345643/d61dcab0-2805-4787-856e-8cdba2eae579)
+
+
 https://github.com/yousseftarhri/casablancaai/assets/40345643/83536520-a4da-4bb6-8ed5-7964f123b2bf
 
