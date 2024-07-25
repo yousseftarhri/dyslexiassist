@@ -1,9 +1,4 @@
-langchain-pinecone
-langchain-openai
-langchain
 openai
 python-dotenv
-pymongo[srv]
-openai
 python-telegram-bot==13.13
 urllib3

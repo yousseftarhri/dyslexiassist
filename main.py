@@ -17,15 +17,8 @@ OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 client = OpenAI(api_key=OPENAI_API_KEY)
 bot_token = os.getenv('TELEGRAM_BOT_TOKEN')
 
-def prompt_ai(context) :
-    prompt_ai = f"""
-    You role is to speak with someone who wanna learn english, by speaking, help the user to improve his speak skills. use the context delimited by double quotes to answer the user question
-    Make sure to correct any spelling or writing errors made by the user and provide them with feedback.
+#voice_808870631.mp3
 
-    ""context : {context}""
-    
-    """
-    return prompt_ai
 
 def response(messages) :
     prompt = ("""You are Dyslexia Assist, an intelligent and empathetic assistant designed to help individuals with dyslexia improve their reading and speaking skills. Your task is to take a user's spoken input, and then correct any grammatical or syntactical errors while preserving the original meaning and intent of the user's speech. Provide clear and concise corrections that are easy for the user to understand and learn from. \""
@@ -50,17 +43,6 @@ Explanation: The words "goed" and "buyed" are incorrect past tense forms. The co
 
     return completion.choices[0].message.content
 
-def TTS(msg,file_name):
-    response = client.audio.speech.create(
-        model="tts-1",
-        voice="alloy",
-        input=msg,
-    )
-
-    response.stream_to_file(file_name)
-
-    audio = open(file_name, "rb")
-    return audio
 def STT(bot,name_audio,file_id,chat_id) :
     file = bot.getFile(file_id)
 
@@ -99,8 +81,6 @@ def voice_handler(update, context):
         output_ai = response(msg)
         print(output_ai)
         bot.send_message(chat_id=update.message.chat_id, text=f"{msg}", parse_mode='Markdown')
-        #audio = TTS(output_ai,file_path)
-        #bot.send_voice(chat_id=chat_id, voice=audio)
 
         bot.send_message(chat_id=update.message.chat_id, text=output_ai, parse_mode='Markdown')
 
@@ -122,7 +102,6 @@ def text_handler(update, context):
         output_ai = response(msg)
         print(output_ai)
         bot.send_message(chat_id=update.message.chat_id, text=output_ai)
-
 
 
     except Exception as e:
