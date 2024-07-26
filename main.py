@@ -89,7 +89,7 @@ def voice_handler(update, context):
         chat_id = update.message.chat_id
         bot.send_message(chat_id=chat_id, text='We have a problem in our bot we gonna fix it ASAP')
         print(f"An unexpected error occurred: {e}")
-    print("ok")
+
 
 def text_handler(update, context):
     bot = context.bot
@@ -101,7 +101,9 @@ def text_handler(update, context):
 
         output_ai = response(msg)
         print(output_ai)
-        bot.send_message(chat_id=update.message.chat_id, text=output_ai)
+
+        bot.send_message(chat_id=chat_id, text=msg)
+        bot.send_message(chat_id=chat_id, text=output_ai)
 
 
     except Exception as e:
@@ -109,10 +111,10 @@ def text_handler(update, context):
         chat_id = update.message.chat_id
         bot.send_message(chat_id=chat_id, text='We have a problem in our bot we gonna fix it ASAP')
         print(f"An unexpected error occurred: {e}")
-    print("ok")
+
+
 def main():
     """Start the bot."""
-
     updater = Updater(bot_token)
     dp = updater.dispatcher
 
