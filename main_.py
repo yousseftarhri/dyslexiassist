@@ -21,30 +21,25 @@ client = OpenAI(api_key=OPENAI_API_KEY)
 bot_token = os.getenv('TELEGRAM_BOT_TOKEN')
 
 def prompt_ai() :
-    prompt = ("""You are Dyslexia Assist, an intelligent and empathetic assistant designed to help individuals with dyslexia improve their reading and speaking skills. Your task is to take a user's spoken input, and then correct any grammatical or syntactical errors while preserving the original meaning and intent of the user's speech. Provide clear and concise corrections that are easy for the user to understand and learn from. \""
-              Determine if the user is requesting corrections or asking a specific question.
+    prompt = ("""You are Dyslexia Assist, an intelligent and empathetic assistant designed to help individuals with dyslexia improve their reading and speaking skills. Your task is to take a user's spoken input, and then correct any grammatical or syntactical errors while preserving the original meaning and intent of the user's speech. Provide clear and concise corrections that are easy for the user to understand and learn from. Always be encouraging and sprinkle in some humor to make the learning experience enjoyable. \""
+              Determine if the user is requesting corrections or asking a specific question. 
 If the user wants to correct a paragraph, only provide the corrected text.
 If the user asks a specific question, provide a clear and helpful answer, and correct any text if included.
+Be supportive, offer encouragement, and add a touch of humor to make the interaction fun.
+
+Example 1: Specific Question
+User Input (spoken): "What is the capital of France? Also, can you correct this sentence: I has a dog."
+Answer: "The capital of France is Paris."
+Correction: "I have a dog."
+Explanation: The word "has" should be "have" to match the subject "I."
+Nailed it! Just a quick fix. You’re on fire! \
 
 Examples:
-
-Example 1: Text Correction
-
-User Input (spoken): "I goed to the store and buyed some apple."
-
+Example 2: Text Correction
+User Input (spoken): "Correct me please this one : I goed to the store and buyed some apple."
 Correction: "I went to the store and bought some apples."
-
 Explanation: The words "goed" and "buyed" are incorrect past tense forms. The correct forms are "went" and "bought," and "some apple" should be "some apples" to indicate plural.
-
-Example 2: Specific Question
-
-User Input (spoken): "What is the capital of France? Also, can you correct this sentence: I has a dog."
-
-Answer: "The capital of France is Paris."
-
-Correction: "I have a dog."
-
-Explanation: The word "has" should be "have" to match the subject "I."
+You’re doing great! Just a tiny tweak here. Keep up the awesome work!
 
                   """)
     return prompt
@@ -52,8 +47,8 @@ Explanation: The word "has" should be "have" to match the subject "I."
 def response(messages) :
 
     completion = client.chat.completions.create(
-        model="gpt-4",
-        temperature=0.8,
+        model="gpt-4o",
+        temperature=0.7,
         messages=messages)
 
     return completion.choices[0].message.content
@@ -87,9 +82,17 @@ def start(update, context):
     bot = context.bot
     chat_id = update.message.chat_id
     document = collection.find_one({'_id': chat_id})
-    data = {"_id": chat_id, "conversation" : []}
-    welcome = """Hello, 🌟
-Step into a world of language mastery with CasablancaAI. Your AI Language Assistant is ready to embark on an engaging language learning journey with you. Whether you're here to improve your speaking, writing, or listening skills, CasablancaAI is your personalized language tutor."""
+    data = {"_id": chat_id, "conversation" : [{"role": "system", "content": prompt_ai()}]}
+    welcome = """Hey there! 👋
+
+Welcome to Dyslexia Assist, your friendly and fun companion designed to help you improve your reading and speaking skills. Whether you're looking to correct your sentences or get answers to your questions, Dyslexia Assist is here to support you every step of the way.
+
+How it Works:
+
+1. Speak and Record: Simply record your voice by speaking naturally. We'll take care of the rest!
+2. Accurate Transcription: We'll accurately transcribe your spoken words into text.
+3. Smart Corrections: We'll correct any grammatical or word choice errors while keeping your original meaning intact. And don’t worry—we’ll explain any significant changes to help you learn.
+4. Questions and Answers: Have a question? Ask away! We’ll provide clear answers and correct any text you include in your query."""
     if document :
         bot.send_message(chat_id=update.message.chat_id, text=welcome ,parse_mode= 'Markdown')
 
@@ -115,8 +118,9 @@ def voice_handler(update, context):
         file_path = f'voice_{chat_id}.mp3'
         msg = STT(bot ,file_path ,file_id ,chat_id)
         existing_document = collection.find_one({"_id": chat_id})
-        existing_document['conversation'].append({ "role": "user", "content": msg })
-        existing_document['conversation'].insert(0,{"role": "system", "content": prompt_ai()})
+        existing_document['conversation'].append({"role": "user", "content": msg})
+        #existing_document['conversation'].append({"role": "user", "content": msg })
+        #existing_document['conversation'].insert(0,{"role": "system", "content": prompt_ai()})
 
         output_ai = response(existing_document['conversation'])
         print(output_ai)
@@ -152,7 +156,7 @@ def text_handler(update, context):
         existing_document = collection.find_one({"_id": chat_id})
         existing_document['conversation'].append({ "role": "user", "content": msg })
         #existing_document['conversation'][0] =  {"role": "system", "content": prompt_ai()}
-        existing_document['conversation'].insert(0,{"role": "system", "content": prompt_ai()})
+        #existing_document['conversation'].insert(0,{"role": "system", "content": prompt_ai()})
         output_ai = response(existing_document['conversation'])
         print(output_ai)
         bot.send_message(chat_id=update.message.chat_id, text=output_ai)
